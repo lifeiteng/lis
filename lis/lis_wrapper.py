@@ -1,17 +1,23 @@
 import ctypes
 import numpy as np
 import os
+import sys
 
 # Get the path to the shared object file
 file_dir = os.path.dirname(os.path.abspath(__file__))
-so_file = os.path.join(file_dir, '_liblis.cpython-310-x86_64-linux-gnu.so')
+# get python version
+pyversion=f"{sys.version_info.major}{sys.version_info.minor}"
+if os.uname().sysname == 'Darwin':
+    so_file = os.path.join(file_dir, f'_liblis.cpython-{pyversion}-darwin.so')
+else:
+    so_file = os.path.join(file_dir, f'_liblis.cpython-{pyversion}-x86_64-linux-gnu.so')
 
 # Load the shared object file
 _liblis = ctypes.CDLL(so_file)
 
 # Define function prototypes
 _liblis.longestIncreasingSubsequence.restype = ctypes.POINTER(ctypes.c_int)
-_liblis.longestIncreasingSubsequence.argtypes = [np.ctypeslib.ndpointer(dtype=np.int32), ctypes.c_int]
+_liblis.longestIncreasingSubsequence.argtypes = [np.ctypeslib.ndpointer(dtype=np.int32), ctypes.c_int, ctypes.c_void_p]
 
 def longestIncreasingSubsequence(X):
     # Convert Python list to NumPy array
